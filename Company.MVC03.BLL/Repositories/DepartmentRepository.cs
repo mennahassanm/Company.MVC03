@@ -22,7 +22,6 @@ namespace Company.MVC.BLL.Repositories
         
         public IEnumerable<Department> GetAll()
         {
-            using CompanyDbContext context = new CompanyDbContext();
             return _context.Departments.ToList();
         }
         public Department? Get(int id)
