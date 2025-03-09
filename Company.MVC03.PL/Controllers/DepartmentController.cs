@@ -3,6 +3,7 @@ using Company.MVC.BLL.Repositories;
 using Company.MVC.DAL.Models;
 using Company.MVC.PL.DTOS;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Company.MVC.PL.Controllers
 {
@@ -55,6 +56,19 @@ namespace Company.MVC.PL.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Details(int? id)
+        {
+            if (id is null)  
+                return BadRequest("Invalid Id");
+
+            var department =_departmentRepository.Get(id.Value);
+
+            if(department is null)
+                return NotFound(new {StatusCode = 404 , message = $"Department With Id {id} Is Not Found :("}); 
+              
+            return View(department);
+        }
 
     }
 }
