@@ -13,11 +13,13 @@ namespace Company.MVC.BLL.Repositories
     {
         private CompanyDbContext _context; // Null
 
-        public DepartmentRepository()
-        {
-            _context = new CompanyDbContext();
-        }
+        // ASK CLR Create Object From CompanyDbContext
 
+        public DepartmentRepository(CompanyDbContext context)
+        {
+            _context = context;
+        }
+        
         public IEnumerable<Department> GetAll()
         {
             return _context.Departments.ToList();
