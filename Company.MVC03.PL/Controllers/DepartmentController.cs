@@ -70,5 +70,116 @@ namespace Company.MVC.PL.Controllers
             return View(department);
         }
 
+        [HttpGet]
+        public IActionResult Edit (int? id)
+        {
+            if (id is null)
+                return BadRequest("Invalid Id");
+
+            var department = _departmentRepository.Get(id.Value);
+
+            if (department is null)
+                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+
+            return View(department);
+        }
+
+        //[HttpPost]
+        //public IActionResult Edit([FromRoute] int id ,Department department)
+        //{
+        //    if (id == department.Id)
+        //    {
+        //        var Count = _departmentRepository.Update(department);
+
+        //        if (ModelState.IsValid)
+        //        {
+        //            if (Count > 0)
+        //            {
+        //                return RedirectToAction(nameof(Index));
+        //            }
+        //        }
+        //    }
+        //    return View(department);
+        //}
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit([FromRoute] int id, Department department)
+        {
+            if (id != department.Id) return BadRequest();
+            {
+                var Count = _departmentRepository.Update(department);
+
+                if (ModelState.IsValid)
+                {
+                    if (Count > 0)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+            return View(department);
+        }
+
+        //[HttpPost]
+        ////[ValidateAntiForgeryToken]
+        //public IActionResult Edit([FromRoute] int id, UpdateDepartmentDTO model)
+        //{
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        var department = new Department()
+        //        {
+        //            Id = id,
+        //            Name = model.Name,
+        //            Code = model.Code,
+        //            CreateAt = model.CreateAt,
+        //        };
+        //        var Count = _departmentRepository.Update(department);
+
+        //        if (Count > 0)
+        //        {
+        //            return RedirectToAction(nameof(Index));
+        //        }
+        //    }
+
+        //    return View(model);
+        //}
+
+        [HttpGet]
+        //[ValidateAntiForgeryToken]
+        public IActionResult Delete( int? id)
+        {
+            if (id is null)
+                return BadRequest("Invalid Id");
+
+            var department = _departmentRepository.Get(id.Value);
+
+            if (department is null)
+                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+
+            return View(department);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete([FromRoute] int id, Department department)
+        {
+            if (id != department.Id) return BadRequest();
+            {
+                var Count = _departmentRepository.Delete(department);
+
+                if (ModelState.IsValid)
+                {
+                    if (Count > 0)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+            return View(department);
+        }
+
+
     }
 }
