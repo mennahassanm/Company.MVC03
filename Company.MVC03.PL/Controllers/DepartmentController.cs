@@ -57,7 +57,7 @@ namespace Company.MVC.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int? id)
+        public IActionResult Details(int? id , string viewName = "Details")
         {
             if (id is null)  
                 return BadRequest("Invalid Id");
@@ -67,21 +67,21 @@ namespace Company.MVC.PL.Controllers
             if(department is null)
                 return NotFound(new {StatusCode = 404 , message = $"Department With Id {id} Is Not Found :("}); 
               
-            return View(department);
+            return View(viewName , department);
         }
 
         [HttpGet]
         public IActionResult Edit (int? id)
         {
-            if (id is null)
-                return BadRequest("Invalid Id");
+            //if (id is null)
+            //    return BadRequest("Invalid Id");
 
-            var department = _departmentRepository.Get(id.Value);
+            //var department = _departmentRepository.Get(id.Value);
 
-            if (department is null)
-                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+            //if (department is null)
+            //    return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
 
-            return View(department);
+            return Details(id , "Edit" );
         }
 
         //[HttpPost]
@@ -150,15 +150,15 @@ namespace Company.MVC.PL.Controllers
         //[ValidateAntiForgeryToken]
         public IActionResult Delete( int? id)
         {
-            if (id is null)
-                return BadRequest("Invalid Id");
+            //if (id is null)
+            //    return BadRequest("Invalid Id");
 
-            var department = _departmentRepository.Get(id.Value);
+            //var department = _departmentRepository.Get(id.Value);
 
-            if (department is null)
-                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+            //if (department is null)
+            //    return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
 
-            return View(department);
+            return Details(id, "Delete");
         }
 
         [HttpPost]
