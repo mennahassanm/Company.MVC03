@@ -1,15 +1,15 @@
-﻿@model IEnumerable<Department>
+﻿@model IEnumerable<Employee>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>All Department</h1>
+<h1>All Employee</h1>
 
 <br />
 <br />
 
-<a asp-action="Create"asp-controller="Department"class="btn btn-primary">Create Department</a>
+<a asp-action="Create" asp-controller="Employee" class="btn btn-primary">Create Employee</a>
 
 <br />
 <br />
@@ -19,12 +19,19 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
-                <th>Code</th>
                 <th>Name</th>
-                <th>Date Of Creation</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Salary</th>
+                <th>IsActive</th>
+                <th>IsDeleted</th>
+                <th>@Html.DisplayNameFor(E => E.HiringData)</th>
+                <th>@Html.DisplayNameFor(E => E.CreateAt)</th>
                 <th>Details</th>
                 <th>Update</th>
-                <th>Delete</th>  
+                <th>Delete</th>
             </tr>
         </thead>
          
@@ -32,8 +39,15 @@
             @foreach(var item in Model)
             {
                 <tr>
-                    <td>@item.Code</td>
                     <td>@item.Name</td>
+                    <td>@item.Age</td>
+                    <td>@item.Email</td>
+                    <td>@item.Addrees</td>
+                    <td>@item.Phone</td>
+                    <td>@item.Salary</td>
+                    <td>@item.IsActive</td>
+                    <td>@item.IsDeleted</td>
+                    <td>@item.HiringData</td>
                     <td>@item.CreateAt</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning">Details</a>
@@ -52,9 +66,9 @@
 }
 else
 {
-    <div class="mt-4 alert-info">
+    <div class="mt-4 alert alert-success">
         <h4>
-            There are No Departments :(
+            There are No Employees :(
         </h4>
     </div>
 }

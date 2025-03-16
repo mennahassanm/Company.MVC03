@@ -50,8 +50,7 @@ namespace Company.MVC.PL.Controllers
                 {
                     return RedirectToAction(nameof(Index));
                 }
-
-
+               
             }
             return View(model);
         }
