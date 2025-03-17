@@ -72,15 +72,20 @@ namespace Company.MVC.PL.Controllers
         [HttpGet]
         public IActionResult Edit (int? id)
         {
-            //if (id is null)
-            //    return BadRequest("Invalid Id");
+            if (id is null)
+                return BadRequest("Invalid Id");
 
-            //var department = _departmentRepository.Get(id.Value);
+            var department = _departmentRepository.Get(id.Value);
 
-            //if (department is null)
-            //    return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
-
-            return Details(id , "Edit" );
+            if (department is null)
+                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+            var departmentDTO = new CreateDepartmentDTO()
+            {
+                Code = department.Code,
+                Name = department.Name,
+                CreateAt = department.CreateAt,
+            };
+            return View(departmentDTO);
         }
 
         //[HttpPost]
@@ -103,21 +108,27 @@ namespace Company.MVC.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, Department department)
+        public IActionResult Edit([FromRoute] int id, CreateDepartmentDTO model)
         {
-            if (id != department.Id) return BadRequest();
+            if (ModelState.IsValid) ;
             {
+                //if (id != model.Id) return BadRequest();
+                var department = new Department()
+                {
+                    Code = model.Code,
+                    Name = model.Name,
+                    CreateAt = model.CreateAt,
+                };
+
                 var Count = _departmentRepository.Update(department);
 
-                if (ModelState.IsValid)
+                if (Count > 0)
                 {
-                    if (Count > 0)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
+                    return RedirectToAction(nameof(Index));
                 }
+
             }
-            return View(department);
+            return View(model);
         }
 
         //[HttpPost]

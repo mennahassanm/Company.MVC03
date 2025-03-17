@@ -78,17 +78,51 @@ namespace Company.MVC.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            return Details(id, "Edit");
+            if (id is null)
+                return BadRequest("Invalid Id");
+
+            var employee = _employeeRepository.Get(id.Value);
+
+            if (employee is null)
+                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+            var employeeDTO = new CreateEmployeeDTO()
+            {
+                Name = employee.Name,
+                Addrees = employee.Addrees,
+                Age = employee.Age,
+                CreateAt = employee.CreateAt,
+                HiringData = employee.HiringData,
+                Email = employee.Email,
+                IsActive = employee.IsActive,
+                IsDeleted = employee.IsDeleted,
+                Phone = employee.Phone,
+                Salary = employee.Salary,
+            };
+            return View(employeeDTO);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, Employee model)
+        public IActionResult Edit([FromRoute] int id, CreateEmployeeDTO model)
         {
             if (ModelState.IsValid);
             {
-                if (id != model.Id) return BadRequest();
-                var Count = _employeeRepository.Update(model);
+                //if (id != model.Id) return BadRequest();
+                var employee = new Employee()
+                {
+                    Name = model.Name,
+                    Addrees = model.Addrees,
+                    Age = model.Age,
+                    CreateAt = model.CreateAt,
+                    HiringData = model.HiringData,
+                    Email = model.Email,
+                    IsActive = model.IsActive,
+                    IsDeleted = model.IsDeleted,
+                    Phone = model.Phone,
+                    Salary = model.Salary,
+                };
+
+                var Count = _employeeRepository.Update(employee);
 
                     if (Count > 0)
                     {
