@@ -17,7 +17,9 @@ namespace Company.MVC.DAL.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime HiringData { get; set; }
-        public DateTime CreateAt { get; set; }         
+        public DateTime CreateAt { get; set; }
+        public int? DepartmentId { get; set; }
+        public Department Department { get; set; }
 
     }
 }
