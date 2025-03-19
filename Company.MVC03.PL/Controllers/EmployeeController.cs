@@ -2,6 +2,7 @@
 using Company.MVC.DAL.Models;
 using Company.MVC.PL.DTOS;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Company.MVC.PL.Controllers
 {
@@ -21,6 +22,20 @@ namespace Company.MVC.PL.Controllers
         {
             var employees = _employeeRepository.GetAll();
 
+            // Dictionary   : 3 Property
+            // 1. ViewData  : Transfer Extra Information From Controller (Action) To View
+
+            //ViewData["Message"] = "Hello From ViewData";
+
+            // 2. ViewBag   : Transfer Extra Information From Controller (Action) To View
+
+            //ViewBag.Massage = "Hello From ViewBag";
+
+            //ViewBag.Message = new { Message = "Hello From ViewBag" };
+
+            // 3. TempData  :
+
+
             return View(employees);
         }
 
@@ -35,26 +50,35 @@ namespace Company.MVC.PL.Controllers
         {
             if (ModelState.IsValid) // Server Side Validation
             {
-                var employee = new Employee()
+                try
                 {
-                    Name = model.Name,
-                    Addrees = model.Addrees,
-                    Age = model.Age,
-                    CreateAt = model.CreateAt,
-                    HiringData = model.HiringData,
-                    Email = model.Email,
-                    IsActive = model.IsActive,
-                    IsDeleted = model.IsDeleted,
-                    Phone = model.Phone,
-                    Salary = model.Salary,
-                };
+                    var employee = new Employee()
+                    {
+                        Name = model.Name,
+                        Addrees = model.Addrees,
+                        Age = model.Age,
+                        CreateAt = model.CreateAt,
+                        HiringData = model.HiringData,
+                        Email = model.Email,
+                        IsActive = model.IsActive,
+                        IsDeleted = model.IsDeleted,
+                        Phone = model.Phone,
+                        Salary = model.Salary,
+                    };
 
-                var Count = _employeeRepository.Add(employee);
-                if (Count > 0)
-                {
-                    return RedirectToAction(nameof(Index));
+                    var Count = _employeeRepository.Add(employee);
+                    if (Count > 0)
+                    {
+                        TempData["Message"] = "Employee Is Created !! ";
+                        return RedirectToAction(nameof(Index));
+                    }
+
                 }
-                
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError ("", ex.Message);
+                }
+
 
 
             }
