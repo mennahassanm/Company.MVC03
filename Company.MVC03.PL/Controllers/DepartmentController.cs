@@ -1,4 +1,5 @@
-﻿using Company.MVC.BLL.Interfaces;
+﻿using AutoMapper;
+using Company.MVC.BLL.Interfaces;
 using Company.MVC.BLL.Repositories;
 using Company.MVC.DAL.Models;
 using Company.MVC.PL.DTOS;
@@ -11,13 +12,23 @@ namespace Company.MVC.PL.Controllers
     public class DepartmentController : Controller
     {
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IMapper _mapper;
+
 
         // ASK CLR Create Object From DepartmentRepository
 
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        public DepartmentController(
+            IEmployeeRepository employeeRepository,
+            IDepartmentRepository departmentRepository,
+            IMapper mapper
+            )
         {
+            _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
+            _mapper = mapper;
         }
+
 
         [HttpGet] // GET : /Department/Index
         public IActionResult Index()
@@ -110,7 +121,7 @@ namespace Company.MVC.PL.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit([FromRoute] int id, CreateDepartmentDTO model)
         {
-            if (ModelState.IsValid) ;
+            if (ModelState.IsValid) 
             {
                 //if (id != model.Id) return BadRequest();
                 var department = new Department()

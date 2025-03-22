@@ -1,4 +1,5 @@
-﻿using Company.MVC.BLL.Interfaces;
+﻿using AutoMapper;
+using Company.MVC.BLL.Interfaces;
 using Company.MVC.DAL.Models;
 using Company.MVC.PL.DTOS;
 using Microsoft.AspNetCore.Mvc;
@@ -9,23 +10,39 @@ namespace Company.MVC.PL.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IMapper _mapper;
 
         // ASK CLR Create Object From IEmployeeRepository
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(
+            IEmployeeRepository employeeRepository , 
+            IDepartmentRepository departmentRepository,
+            IMapper mapper
+            )
         {
             _employeeRepository = employeeRepository;
+            _departmentRepository = departmentRepository;
+            _mapper = mapper;
         }
 
         [HttpGet] // GET : /Department/Index
-        public IActionResult Index()
+        public IActionResult Index(string? SearchInput)
         {
-            var employees = _employeeRepository.GetAll();
+            IEnumerable<Employee> employees;
+            if (string.IsNullOrEmpty(SearchInput))
+            {
+                employees = _employeeRepository.GetAll();
+            }
+            else
+            {
+                employees = _employeeRepository.GetByName(SearchInput);
+            }
 
             // Dictionary   : 3 Property
             // 1. ViewData  : Transfer Extra Information From Controller (Action) To View
 
-            //ViewData["Message"] = "Hello From ViewData";
+            //ViewData["Message"] = "Hello From ViewDat,a";
 
             // 2. ViewBag   : Transfer Extra Information From Controller (Action) To View
 
@@ -42,7 +59,9 @@ namespace Company.MVC.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var departments = _departmentRepository.GetAll();
+            ViewData["departments"] = departments ;
+            return View();  
         }
 
         [HttpPost]
@@ -52,19 +71,22 @@ namespace Company.MVC.PL.Controllers
             {
                 try
                 {
-                    var employee = new Employee()
-                    {
-                        Name = model.Name,
-                        Addrees = model.Addrees,
-                        Age = model.Age,
-                        CreateAt = model.CreateAt,
-                        HiringData = model.HiringData,
-                        Email = model.Email,
-                        IsActive = model.IsActive,
-                        IsDeleted = model.IsDeleted,
-                        Phone = model.Phone,
-                        Salary = model.Salary,
-                    };
+                    // Manual Mapping
+                    //var employee = new Employee()
+                    //{
+                    //    Name = model.Name,
+                    //    Addrees = model.Addrees,
+                    //    Age = model.Age,
+                    //    CreateAt = model.CreateAt,
+                    //    HiringData = model.HiringData,
+                    //    Email = model.Email,
+                    //    IsActive = model.IsActive,
+                    //    IsDeleted = model.IsDeleted,
+                    //    Phone = model.Phone,
+                    //    Salary = model.Salary,
+                    //    DepartmentId = model.DepartmentId,
+                    //};
+                    var employee = _mapper.Map<Employee>(model);
 
                     var Count = _employeeRepository.Add(employee);
                     if (Count > 0)
@@ -86,7 +108,7 @@ namespace Company.MVC.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int? id, string viewName = "Details")
+        public IActionResult Details(int? id)
         {
             if (id is null)
                 return BadRequest("Invalid Id");
@@ -96,63 +118,45 @@ namespace Company.MVC.PL.Controllers
             if (employee is null)
                 return NotFound(new { StatusCode = 404, message = $"Employee With Id {id} Is Not Found :(" });
 
-            return View(viewName, employee);
+            //var dto = _mapper.Map<CreateEmployeeDTO>(employee);
+
+            return View(employee);
         }
 
         [HttpGet]
         public IActionResult Edit(int? id)
         {
+          var departments = _departmentRepository.GetAll();
+            ViewData["departments"] = departments;
             if (id is null)
                 return BadRequest("Invalid Id");
-
             var employee = _employeeRepository.Get(id.Value);
 
             if (employee is null)
                 return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
-            var employeeDTO = new CreateEmployeeDTO()
-            {
-                Name = employee.Name,
-                Addrees = employee.Addrees,
-                Age = employee.Age,
-                CreateAt = employee.CreateAt,
-                HiringData = employee.HiringData,
-                Email = employee.Email,
-                IsActive = employee.IsActive,
-                IsDeleted = employee.IsDeleted,
-                Phone = employee.Phone,
-                Salary = employee.Salary,
-            };
-            return View(employeeDTO);
+
+            var dto = _mapper.Map<CreateEmployeeDTO>(employee);
+
+            return View(dto);
         }
 
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, CreateEmployeeDTO model)
+        public IActionResult Edit([FromRoute] int id, Employee model)
         {
-            if (ModelState.IsValid);
+            if (ModelState.IsValid)
             {
                 //if (id != model.Id) return BadRequest();
-                var employee = new Employee()
-                {
-                    Name = model.Name,
-                    Addrees = model.Addrees,
-                    Age = model.Age,
-                    CreateAt = model.CreateAt,
-                    HiringData = model.HiringData,
-                    Email = model.Email,
-                    IsActive = model.IsActive,
-                    IsDeleted = model.IsDeleted,
-                    Phone = model.Phone,
-                    Salary = model.Salary,
-                };
-
-                var Count = _employeeRepository.Update(employee);
-
-                    if (Count > 0)
+              if(ModelState.IsValid)
+              {
+                    if (id != model.Id) return BadRequest();
+                    var count = _employeeRepository.Update(model);
+                    if (count > 0)
                     {
                         return RedirectToAction(nameof(Index));
                     }
-                
+              }              
             }
             return View(model);
         }
@@ -161,15 +165,17 @@ namespace Company.MVC.PL.Controllers
         //[ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            return Details(id, "Delete");
+            return Details(id);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete([FromRoute] int id, Employee model)
         {
-            if (id != model.Id) return BadRequest();
+            if (!ModelState.IsValid)
             {
+                if (id != model.Id) return BadRequest();
+
                 var Count = _employeeRepository.Delete(model);
 
                 if (ModelState.IsValid)
@@ -180,6 +186,7 @@ namespace Company.MVC.PL.Controllers
                     }
                 }
             }
+            
             return View(model);
         }
 

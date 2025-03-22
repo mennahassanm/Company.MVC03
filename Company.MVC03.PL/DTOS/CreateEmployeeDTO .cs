@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Company.MVC.DAL.Models;
 
 namespace Company.MVC.PL.DTOS
 {
@@ -35,5 +36,7 @@ namespace Company.MVC.PL.DTOS
         [DisplayName("Date Of Create")]
         public DateTime CreateAt { get; set; }
 
+        [DisplayName ("Department")]
+        public int? DepartmentId { get; set; }
     }
 }
