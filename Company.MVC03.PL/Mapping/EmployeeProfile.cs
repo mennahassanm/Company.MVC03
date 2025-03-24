@@ -10,7 +10,9 @@ namespace Company.MVC.PL.Mapping
         public EmployeeProfile() 
         {
             CreateMap<CreateEmployeeDTO, Employee>();
-            CreateMap<Employee, CreateEmployeeDTO>();
+            CreateMap<Employee, CreateEmployeeDTO>()
+                //.ForMember(d => d.DepartmentName , o => o.MapFrom(S =>S.Department.Name))
+                ;
 
         }
     }

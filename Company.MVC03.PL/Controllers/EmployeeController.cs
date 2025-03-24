@@ -71,21 +71,7 @@ namespace Company.MVC.PL.Controllers
             {
                 try
                 {
-                    // Manual Mapping
-                    //var employee = new Employee()
-                    //{
-                    //    Name = model.Name,
-                    //    Addrees = model.Addrees,
-                    //    Age = model.Age,
-                    //    CreateAt = model.CreateAt,
-                    //    HiringData = model.HiringData,
-                    //    Email = model.Email,
-                    //    IsActive = model.IsActive,
-                    //    IsDeleted = model.IsDeleted,
-                    //    Phone = model.Phone,
-                    //    Salary = model.Salary,
-                    //    DepartmentId = model.DepartmentId,
-                    //};
+                   
                     var employee = _mapper.Map<Employee>(model);
 
                     var Count = _employeeRepository.Add(employee);
@@ -118,75 +104,73 @@ namespace Company.MVC.PL.Controllers
             if (employee is null)
                 return NotFound(new { StatusCode = 404, message = $"Employee With Id {id} Is Not Found :(" });
 
-            //var dto = _mapper.Map<CreateEmployeeDTO>(employee);
-
-            return View(employee);
-        }
-
-        [HttpGet]
-        public IActionResult Edit(int? id)
-        {
-          var departments = _departmentRepository.GetAll();
-            ViewData["departments"] = departments;
-            if (id is null)
-                return BadRequest("Invalid Id");
-            var employee = _employeeRepository.Get(id.Value);
-
-            if (employee is null)
-                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
-
             var dto = _mapper.Map<CreateEmployeeDTO>(employee);
 
             return View(dto);
         }
 
-     
+        [HttpGet]
+        public IActionResult Edit(int? id, string viewName = "Edit")
+        {
+          
+            if (id is null)
+                return BadRequest("Invalid Id");
+            var employee = _employeeRepository.Get(id.Value);
+            var departments = _departmentRepository.GetAll();
+            ViewData["departments"] = departments;
+            if (employee is null)
+                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+
+            var dto = _mapper.Map<CreateEmployeeDTO>(employee);
+
+            return View(viewName,dto);
+        }
+
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, Employee model)
+        //[ValidateAntiForgeryToken]
+        public IActionResult Edit([FromRoute] int id, CreateEmployeeDTO model, string viewName = "Edit")
         {
             if (ModelState.IsValid)
             {
                 //if (id != model.Id) return BadRequest();
-              if(ModelState.IsValid)
-              {
-                    if (id != model.Id) return BadRequest();
-                    var count = _employeeRepository.Update(model);
-                    if (count > 0)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-              }              
+
+                var employee = _mapper.Map<Employee>(model);
+                employee.Id = id;
+                var count = _employeeRepository.Update(employee);
+                if (count > 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
             }
-            return View(model);
+            return View(viewName, model);
         }
 
         [HttpGet]
         //[ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            return Details(id);
+            return Edit(id, "Delete");
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int id, Employee model)
+        //[ValidateAntiForgeryToken]
+        public IActionResult Delete([FromRoute] int id, CreateEmployeeDTO model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                if (id != model.Id) return BadRequest();
-
-                var Count = _employeeRepository.Delete(model);
-
-                if (ModelState.IsValid)
-                {
+                var employee = _mapper.Map<Employee>(model);
+                employee.Id = id;
+                var Count = _employeeRepository.Delete(employee);
+                
                     if (Count > 0)
                     {
                         return RedirectToAction(nameof(Index));
                     }
-                }
+                
             }
-            
+
             return View(model);
         }
 
