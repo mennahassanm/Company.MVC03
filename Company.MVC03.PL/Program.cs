@@ -30,6 +30,7 @@ namespace Company.MVC03.PL
 
             //builder.Services.AddAutoMapper(typeof(EmployeeProfile));
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
 
             // Life Time =>
             //builder.Services.AddScoped();    // Create Object Life Time Per Request - UnReachable Object

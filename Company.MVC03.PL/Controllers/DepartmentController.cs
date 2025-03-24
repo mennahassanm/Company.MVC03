@@ -31,57 +31,67 @@ namespace Company.MVC.PL.Controllers
 
 
         [HttpGet] // GET : /Department/Index
-        public IActionResult Index()
+        public IActionResult Index(string? SearchInput)
         {
-            var departments = _departmentRepository.GetAll();
-
+            IEnumerable<Department> departments;
+            if (string.IsNullOrEmpty(SearchInput))
+            {
+                departments = _departmentRepository.GetAll();
+            }
+            else
+            {
+                departments = _departmentRepository.GetByName(SearchInput);
+            }
             return View(departments); 
         }
 
         [HttpGet] 
         public IActionResult Create()
         {
+            var departments = _departmentRepository.GetAll();
+            ViewData["departments"] = departments;
             return View();
         }
 
         [HttpPost]
         public IActionResult Create(CreateDepartmentDTO model)
         {
-            if (ModelState.IsValid) // Server Side Validation
-            {
-                var department = new Department()
-                {
-                    Code = model.Code,
-                    Name = model.Name,
-                    CreateAt = model.CreateAt,
-                };
+           try
+           {
+                var department = _mapper.Map<Department>(model);
 
-               var Count = _departmentRepository.Add(department);
+                var Count = _departmentRepository.Add(department);
                 if (Count > 0)
                 {
+                    TempData["Message"] = "Department Is Created !! ";
                     return RedirectToAction(nameof(Index));
                 }
-               
-            }
+
+           }
+           catch(Exception ex)
+           {
+                ModelState.AddModelError("", ex.Message);
+
+           }
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult Details(int? id , string viewName = "Details")
+        public IActionResult Details(int? id, string viewName = "Details")
         {
-            if (id is null)  
+            if (id is null)
                 return BadRequest("Invalid Id");
 
-            var department =_departmentRepository.Get(id.Value);
+            var department = _departmentRepository.Get(id.Value);
 
-            if(department is null)
-                return NotFound(new {StatusCode = 404 , message = $"Department With Id {id} Is Not Found :("}); 
-              
-            return View(viewName , department);
+            if (department is null)
+                return NotFound(new { StatusCode = 404, message = $"Department With Id {id} Is Not Found :(" });
+
+            return View(viewName, department);
         }
 
         [HttpGet]
-        public IActionResult Edit (int? id)
+        public IActionResult Edit(int? id)
         {
             if (id is null)
                 return BadRequest("Invalid Id");
@@ -121,7 +131,7 @@ namespace Company.MVC.PL.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit([FromRoute] int id, CreateDepartmentDTO model)
         {
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
                 //if (id != model.Id) return BadRequest();
                 var department = new Department()
@@ -169,7 +179,7 @@ namespace Company.MVC.PL.Controllers
 
         [HttpGet]
         //[ValidateAntiForgeryToken]
-        public IActionResult Delete( int? id)
+        public IActionResult Delete(int? id)
         {
             //if (id is null)
             //    return BadRequest("Invalid Id");
@@ -200,7 +210,6 @@ namespace Company.MVC.PL.Controllers
             }
             return View(department);
         }
-
 
     }
 }

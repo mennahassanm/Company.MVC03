@@ -9,6 +9,8 @@ namespace Company.MVC.BLL.Interfaces
 {
     public interface IDepartmentRepository : IGenericRepository<Department>
     {
+        List<Department> GetByName(string name);
+
         //IEnumerable<Department> GetAll();
         //Department? Get (int id);
         //int Add (Department model);
