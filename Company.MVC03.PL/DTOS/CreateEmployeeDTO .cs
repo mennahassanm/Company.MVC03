@@ -40,5 +40,9 @@ namespace Company.MVC.PL.DTOS
         public int? DepartmentId { get; set; }
 
         public string? DepartmentName { get; set; }
+
+        public string? ImageName { get; set; }
+
+        public IFormFile? Image { get; set; }
     }
 }

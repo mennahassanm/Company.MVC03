@@ -1,3 +1,4 @@
+using Company.MVC.BLL;
 using Company.MVC.BLL.Interfaces;
 using Company.MVC.BLL.Repositories;
 using Company.MVC.DAL.Data.Contexts;
@@ -15,32 +16,33 @@ namespace Company.MVC03.PL
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews(); // Register Built-in MVC Services
-            builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>(); // Allow DI For DepartmentRepository
-            builder.Services.AddScoped<IEmployeeRepository,EmployeeRepository>();
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allow DI For DepartmentRepositories
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allow DI For DepartmentRepositories
 
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddDbContext<CompanyDbContext>(options => 
+            builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-                //options.UseSqlServer(builder.Configuration["DefaultConnection"]);
-
             }); // Allow DI For CompanyDbContext
 
-            //builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
             builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
 
-            // Life Time =>
-            //builder.Services.AddScoped();    // Create Object Life Time Per Request - UnReachable Object
-            //builder.Services.AddTransient(); // Create Object Life Time Per Operation 
-            //builder.Services.AddSingleton(); // Create Object Life Time Per App 
 
 
-            builder.Services.AddScoped<IScopedService,ScopedService>(); // Per Request
-            builder.Services.AddTransient<ITransentService,TransentService>(); // Per Operation 
-            builder.Services.AddSingleton<ISingletonService,SingletonService>(); // Per App 
+
+            // Life Time
+            //builder.Services.AddScoped();    // Create Object Life Per Request - UnReachable Object 
+            //builder.Services.AddTransient(); // Create Object Life Per Operation 
+            //builder.Services.AddSingleton(); // Create Object Life Per Application
+
+            builder.Services.AddScoped<IScopedService, ScopedService>(); // Per Request
+            builder.Services.AddTransient<ITransentService, TransentService>(); // Per Operation
+            builder.Services.AddSingleton<ISingletonService, SingletonService>(); // Per Application
+
 
 
             var app = builder.Build();
@@ -58,7 +60,7 @@ namespace Company.MVC03.PL
 
             app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
