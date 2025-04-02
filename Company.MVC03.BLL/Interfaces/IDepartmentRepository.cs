@@ -9,7 +9,7 @@ namespace Company.MVC.BLL.Interfaces
 {
     public interface IDepartmentRepository : IGenericRepository<Department>
     {
-        List<Department> GetByName(string name);
+        Task<List<Department>> GetByNameAsync(string name);
 
         //IEnumerable<Department> GetAll();
         //Department? Get (int id);
