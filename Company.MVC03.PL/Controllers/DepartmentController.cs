@@ -3,11 +3,14 @@ using Company.MVC.BLL.Interfaces;
 using Company.MVC.BLL.Repositories;
 using Company.MVC.DAL.Models;
 using Company.MVC.PL.DTOS;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Company.MVC.PL.Controllers
 {
+    [Authorize]
+
     // MVC Controller
     public class DepartmentController : Controller
     {

@@ -4,11 +4,14 @@ using Company.MVC.BLL.Interfaces;
 using Company.MVC.DAL.Models;
 using Company.MVC.PL.DTOS;
 using Company.MVC.PL.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Company.MVC.PL.Controllers
 {
+    [Authorize]
+
     public class EmployeeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

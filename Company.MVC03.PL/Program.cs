@@ -2,8 +2,10 @@ using Company.MVC.BLL;
 using Company.MVC.BLL.Interfaces;
 using Company.MVC.BLL.Repositories;
 using Company.MVC.DAL.Data.Contexts;
+using Company.MVC.DAL.Models;
 using Company.MVC.PL.Mapping;
 using Company.MVC.PL.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -22,6 +24,17 @@ namespace Company.MVC03.PL
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                              .AddEntityFrameworkStores<CompanyDbContext>();
+
+
+            builder.Services.ConfigureApplicationCookie(config =>
+            {
+                config.LoginPath = "/Account/SignIn";
+            });
+
+
+
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -31,8 +44,7 @@ namespace Company.MVC03.PL
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
             builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
 
-
-
+            
 
             // Life Time
             //builder.Services.AddScoped();    // Create Object Life Per Request - UnReachable Object 
@@ -43,7 +55,7 @@ namespace Company.MVC03.PL
             builder.Services.AddTransient<ITransentService, TransentService>(); // Per Operation
             builder.Services.AddSingleton<ISingletonService, SingletonService>(); // Per Application
 
-
+            
 
             var app = builder.Build();
 
@@ -60,6 +72,7 @@ namespace Company.MVC03.PL
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
