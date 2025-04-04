@@ -176,6 +176,44 @@ namespace Company.MVC.PL.Controllers
 
         #endregion
 
+        #region Reset Password
+
+        // New Password : Pa$$w0rd
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            TempData["email"] = email;
+            TempData["token"] = token;
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
+        {
+            if (ModelState.IsValid)
+            {
+                var email = TempData["email"] as string;
+                var token = TempData["token"] as string;
+
+                if (email is null || token is null) return BadRequest("Invalid Operation");
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user is not null)
+                {
+                    var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("SignIn");
+                    }
+
+                }
+                ModelState.AddModelError("", "Invalid Reset Password Operation  !!");
+
+            }
+            return View();
+        }
+
+        #endregion
 
 
 
