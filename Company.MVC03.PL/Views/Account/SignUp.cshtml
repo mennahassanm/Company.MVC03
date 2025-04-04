@@ -7,8 +7,8 @@
 
 <div class="main-agileinfo">
 	<div class="agileits-top">
-		<div asp-validation-summary="All" ></div>
-		<form asp-action="SingnUp">
+		<div asp-validation-summary="All" class=" m-3 alert alert-info" ></div>
+		<form asp-action="SignUp" asp-controller="Account" method="post">
 			<input class="text" asp-for="UserName" placeholder="User Name" required>
 			<input class="text" asp-for="FirstName" placeholder="First Name" required >
 			<input class="text" asp-for="LastName" placeholder="Last Name" required>

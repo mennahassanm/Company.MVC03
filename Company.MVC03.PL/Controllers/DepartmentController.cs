@@ -102,52 +102,53 @@ namespace Company.MVC.PL.Controllers
             return View(viewName , dto);
         }
 
+        //[HttpPost]
+        //// [ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit([FromRoute] int id, CreateDepartmentDTO model, string viewName = "Edit")
+        //{
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        var department = _mapper.Map<Department>(model);
+        //        _unitOfWork.DepartmentRepository.Update(department);
+        //        var count = await _unitOfWork.CompleteAsync();
+        //        if (count > 0)
+        //        {
+        //            return RedirectToAction(nameof(Index));
+        //        }
+        //    }
+
+        //    return View(viewName, model);
+        //}
+
+
         [HttpPost]
-        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromRoute] int id, CreateDepartmentDTO model, string viewName = "Edit")
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit([FromRoute] int id, UpdateDepartmentDTO model)
         {
 
             if (ModelState.IsValid)
             {
-                var department = _mapper.Map<Department>(model);
-                _unitOfWork.DepartmentRepository.Update(department);
+                var department = new Department()
+                {
+                    Id = id,
+                    Name = model.Name,
+                    Code = model.Code,
+                    CreateAt = model.CreateAt,
+
+                };
+                 _unitOfWork.DepartmentRepository.Update(department);
                 var count = await _unitOfWork.CompleteAsync();
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
+
             }
 
-            return View(viewName, model);
+
+            return View(model);
         }
-
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Edit([FromRoute] int id, UpdateDepartmentDto model)
-        //{
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        var department = new Department()
-        //        {
-        //            Id = id,
-        //            Name = model.Name,
-        //            Code = model.Code,
-        //            CreateAt = model.CreateAt,
-
-        //        };
-        //            var Count = _departmentRepositories.Update(department);
-        //            if (Count > 0)
-        //            {
-        //                return RedirectToAction(nameof(Index));
-        //            }
-
-        //    }
-
-
-        //    return View(model);
-        //}
 
 
         [HttpGet]

@@ -24,17 +24,7 @@ namespace Company.MVC03.PL
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
-                              .AddEntityFrameworkStores<CompanyDbContext>();
-
-
-            builder.Services.ConfigureApplicationCookie(config =>
-            {
-                config.LoginPath = "/Account/SignIn";
-            });
-
-
-
+            
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -44,7 +34,10 @@ namespace Company.MVC03.PL
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
             builder.Services.AddAutoMapper(M => M.AddProfile(new DepartmentProfile()));
 
-            
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                              .AddEntityFrameworkStores<CompanyDbContext>()
+                              .AddDefaultTokenProviders();
+
 
             // Life Time
             //builder.Services.AddScoped();    // Create Object Life Per Request - UnReachable Object 
@@ -56,6 +49,12 @@ namespace Company.MVC03.PL
             builder.Services.AddSingleton<ISingletonService, SingletonService>(); // Per Application
 
             
+
+            builder.Services.ConfigureApplicationCookie(config =>
+            {
+                config.LoginPath = "/Account/SignIn";
+            });
+
 
             var app = builder.Build();
 
